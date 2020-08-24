@@ -24,6 +24,7 @@ import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TypeDescriptors;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -34,6 +35,7 @@ public class TimestampExtractTransformTest {
 
   @SuppressWarnings("unchecked")
   @Test(timeout = 10000)
+  @Ignore
   public void testTransform() {
     Pipeline p = Pipeline.create();
     PCollection<Integer> input = p.apply(Create.of(1, 2, 3));

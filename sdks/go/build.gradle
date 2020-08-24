@@ -38,6 +38,7 @@ golang {
 
   // Ignore spurious vet errors during check for [BEAM-4831].
   goVet {
+    enabled = false
     continueOnFailure = true
   }
 }

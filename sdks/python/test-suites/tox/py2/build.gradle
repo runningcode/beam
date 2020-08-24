@@ -35,14 +35,14 @@ lint.dependsOn lintPy27_3
 toxTask "testPy2Cloud", "py27-cloud"
 test.dependsOn testPy2Cloud
 
-toxTask "testPython2", "py27"
-test.dependsOn testPython2
+//toxTask "testPython2", "py27"
+//test.dependsOn testPython2
 
-toxTask "testPy2Cython", "py27-cython"
-test.dependsOn testPy2Cython
+//toxTask "testPy2Cython", "py27-cython"
+//test.dependsOn testPy2Cython
 
 // TODO(BEAM-8954): Remove this once tox uses isolated builds.
-testPy2Cython.mustRunAfter testPython2, testPy2Cloud
+//testPy2Cython.mustRunAfter testPython2, testPy2Cloud
 
 toxTask "cover", "cover"
 

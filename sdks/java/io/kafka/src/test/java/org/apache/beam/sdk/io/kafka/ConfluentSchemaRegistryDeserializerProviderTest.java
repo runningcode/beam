@@ -26,10 +26,12 @@ import java.io.IOException;
 import org.apache.beam.sdk.coders.AvroCoder;
 import org.apache.beam.sdk.coders.CoderRegistry;
 import org.apache.beam.sdk.transforms.SerializableFunction;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+@Ignore
 @RunWith(JUnit4.class)
 public class ConfluentSchemaRegistryDeserializerProviderTest {
   @Test

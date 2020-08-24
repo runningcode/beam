@@ -30,11 +30,13 @@ import org.apache.beam.sdk.values.KV;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.TypeDescriptors;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+@Ignore
 @RunWith(JUnit4.class)
 public class FhirIOTest {
   @Rule public final transient TestPipeline pipeline = TestPipeline.create();

@@ -29,12 +29,14 @@ import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.transforms.Create;
 import org.apache.beam.sdk.transforms.SerializableFunction;
 import org.apache.beam.sdk.values.PCollection;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
 @RunWith(JUnit4.class)
+@Ignore
 public class AnnotateTextIT {
   @Rule public TestPipeline testPipeline = TestPipeline.create();
   private static final String TEST_STRING = "Hello, world!";

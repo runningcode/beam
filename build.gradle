@@ -19,7 +19,7 @@
 plugins {
   id 'base'
   // Enable publishing build scans
-  id 'com.gradle.build-scan' version '2.3' apply false
+  id 'com.gradle.build-scan' version '3.4.1'
   // This plugin provides a task to determine which dependencies have updates.
   // Additionally, the plugin checks for updates to Gradle itself.
   //
@@ -31,6 +31,15 @@ plugins {
   id 'net.researchgate.release' version '2.6.0'
   id 'org.apache.beam.module'
   id "org.sonarqube" version "2.7"
+}
+
+gradleEnterprise {
+  server = "https://e.grdev.net"
+  buildScan {
+    publishAlways()
+    captureTaskInputFiles = true
+    tag "beam"
+  }
 }
 
 /*************************************************************************************************/
@@ -61,6 +70,7 @@ rat {
   def exclusions = [
     // Ignore files we track but do not distribute
     "**/.github/**/*",
+          ".java-version",
 
     "**/package-list",
     "**/test.avsc",

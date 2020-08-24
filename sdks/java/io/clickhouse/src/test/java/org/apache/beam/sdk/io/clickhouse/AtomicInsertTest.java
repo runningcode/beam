@@ -36,6 +36,7 @@ import org.apache.beam.sdk.values.PBegin;
 import org.apache.beam.sdk.values.PCollection;
 import org.apache.beam.sdk.values.Row;
 import org.joda.time.Duration;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,6 +44,7 @@ import org.junit.runners.JUnit4;
 
 /** Tests for atomic/idempotent inserts for {@link ClickHouseIO}. */
 @RunWith(JUnit4.class)
+@Ignore
 public class AtomicInsertTest extends BaseClickHouseTest {
   @Rule public TestPipeline pipeline = TestPipeline.create();
 

@@ -38,6 +38,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -163,6 +164,7 @@ public class ShardReadersPoolTest {
   }
 
   @Test
+  @Ignore
   public void shouldInterruptKinesisReadingAndStopShortly()
       throws TransientKinesisException, KinesisShardClosedException {
     when(firstIterator.readNextBatch())

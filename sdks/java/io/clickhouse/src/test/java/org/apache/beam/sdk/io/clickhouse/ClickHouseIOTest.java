@@ -43,6 +43,7 @@ import org.junit.runners.JUnit4;
 
 /** Tests for {@link ClickHouseIO}. */
 @RunWith(JUnit4.class)
+@Ignore
 public class ClickHouseIOTest extends BaseClickHouseTest {
 
   @Rule public TestPipeline pipeline = TestPipeline.create();
