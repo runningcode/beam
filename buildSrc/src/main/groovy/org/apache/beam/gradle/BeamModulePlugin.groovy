@@ -34,11 +34,13 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.Copy
 import org.gradle.api.tasks.Exec
 import org.gradle.api.tasks.JavaExec
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.bundling.Jar
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.api.tasks.testing.Test
 import org.gradle.testing.jacoco.tasks.JacocoReport
+import com.github.spotbugs.snom.SpotBugsTask
 
 import java.util.concurrent.atomic.AtomicInteger
 /**
@@ -347,7 +349,7 @@ class BeamModulePlugin implements Plugin<Project> {
       // Disable jacoco unless report requested such that task outputs can be properly cached.
       // https://discuss.gradle.org/t/do-not-cache-if-condition-matched-jacoco-agent-configured-with-append-true-satisfied/23504
       def enabled = graph.allTasks.any { it instanceof JacocoReport || it.name.contains("javaPreCommit") }
-      project.tasks.withType(Test) { jacoco.enabled = enabled }
+      project.tasks.withType(Test).configureEach { jacoco.enabled = enabled }
     }
 
     // Apply a plugin which provides tasks for dependency / property / task reports.
@@ -712,7 +714,7 @@ class BeamModulePlugin implements Plugin<Project> {
         defaultLintSuppressions.add("rawtypes")
       }
 
-      project.tasks.withType(JavaCompile) {
+      project.tasks.withType(JavaCompile).configureEach {
         options.encoding = "UTF-8"
         // As we want to add '-Xlint:-deprecation' we intentionally remove '-Xlint:deprecation' from compilerArgs here,
         // as intellij is adding this, see https://youtrack.jetbrains.com/issue/IDEA-196615
@@ -727,13 +729,13 @@ class BeamModulePlugin implements Plugin<Project> {
 
       if (project.hasProperty("compileAndRunTestsWithJava11")) {
         def java11Home = project.findProperty("java11Home")
-        project.tasks.compileTestJava {
+        project.tasks.compileTestJava.configure {
           options.fork = true
           options.forkOptions.javaHome = java11Home as File
           options.compilerArgs += ['-Xlint:-path']
           options.compilerArgs.addAll(['--release', '11'])
         }
-        project.tasks.withType(Test) {
+        project.tasks.withType(Test).configureEach {
           useJUnit()
           executable = "${java11Home}/bin/java"
         }
@@ -752,7 +754,7 @@ class BeamModulePlugin implements Plugin<Project> {
         filter { setFailOnNoMatchingTests(false) }
       }
 
-      project.tasks.withType(Test) {
+      project.tasks.withType(Test).configureEach {
         // Configure all test tasks to use JUnit
         useJUnit {}
         // default maxHeapSize on gradle 5 is 512m, lets increase to handle more demanding tests
@@ -781,7 +783,7 @@ class BeamModulePlugin implements Plugin<Project> {
 
       if (configuration.shadowClosure) {
         // Ensure that tests are packaged and part of the artifact set.
-        project.task('packageTests', type: Jar) {
+        project.task('packageTests', type: Jar).configure {
           classifier = 'tests-unshaded'
           from project.sourceSets.test.output
         }
@@ -862,7 +864,7 @@ class BeamModulePlugin implements Plugin<Project> {
       // Configures a checkstyle plugin enforcing a set of rules and also allows for a set of
       // suppressions.
       project.apply plugin: 'checkstyle'
-      project.tasks.withType(Checkstyle) {
+      project.tasks.withType(Checkstyle).configureEach {
         configFile = project.project(":").file("sdks/java/build-tools/src/main/resources/beam/checkstyle.xml")
         configProperties = ["checkstyle.suppressions.file": project.project(":").file("sdks/java/build-tools/src/main/resources/beam/suppressions.xml")]
         showViolations = true
@@ -871,7 +873,7 @@ class BeamModulePlugin implements Plugin<Project> {
       project.checkstyle { toolVersion = "8.23" }
 
       // Configures javadoc plugin and ensure check runs javadoc.
-      project.tasks.withType(Javadoc) {
+      project.tasks.withType(Javadoc).configureEach {
         options.encoding = 'UTF-8'
         options.addBooleanOption('Xdoclint:-missing', true)
       }
@@ -885,7 +887,7 @@ class BeamModulePlugin implements Plugin<Project> {
       project.apply plugin: "net.ltgt.apt-eclipse"
 
       // Enables a plugin which can apply code formatting to source.
-      project.apply plugin: "com.diffplug.gradle.spotless"
+      project.apply plugin: "com.diffplug.spotless"
       // scan CVE
       project.apply plugin: "net.ossindex.audit"
       project.audit { rateLimitAsError = false }
@@ -913,13 +915,18 @@ class BeamModulePlugin implements Plugin<Project> {
         }
         project.spotbugs {
           excludeFilter = project.rootProject.file('sdks/java/build-tools/src/main/resources/beam/spotbugs-filter.xml')
-          sourceSets = [sourceSets.main]
+          // sourceSets = [sourceSets.main]
         }
-        project.tasks.withType(com.github.spotbugs.SpotBugsTask) {
+        project.tasks.withType(SpotBugsTask).configureEach {
           reports {
             html.enabled = !project.jenkins.isCIBuild
             xml.enabled = project.jenkins.isCIBuild
           }
+        }
+        project.tasks.named('spotbugsTest').configure {
+          ignoreFailures = true
+          // We were previously only checking the main source set.
+          enabled = false
         }
       }
 
@@ -933,13 +940,13 @@ class BeamModulePlugin implements Plugin<Project> {
         }
       }
       if (configuration.enableStrictDependencies) {
-        project.tasks.analyzeClassesDependencies.enabled = true
-        project.tasks.analyzeDependencies.enabled = true
-        project.tasks.analyzeTestClassesDependencies.enabled = false
+        project.tasks.analyzeClassesDependencies.configure { enabled = true }
+        project.tasks.analyzeDependencies.configure { enabled = true }
+        project.tasks.analyzeTestClassesDependencies.configure { enabled = false }
       } else {
-        project.tasks.analyzeClassesDependencies.enabled = false
-        project.tasks.analyzeTestClassesDependencies.enabled = false
-        project.tasks.analyzeDependencies.enabled = false
+        project.tasks.analyzeClassesDependencies.configure { enabled = false }
+        project.tasks.analyzeTestClassesDependencies.configure { enabled = false }
+        project.tasks.analyzeDependencies.configure { enabled = false }
       }
 
       // Enable errorprone static analysis
@@ -954,7 +961,7 @@ class BeamModulePlugin implements Plugin<Project> {
 
       project.configurations.errorprone { resolutionStrategy.force 'com.google.errorprone:error_prone_core:2.3.1' }
 
-      project.tasks.withType(JavaCompile) {
+      project.tasks.withType(JavaCompile).configureEach {
         options.errorprone.disableWarningsInGeneratedCode = true
         options.errorprone.excludedPaths = '(.*/)?(build/generated-src|build/generated.*avro-java|build/generated)/.*'
         options.errorprone.errorproneArgs.add("MutableConstantField:OFF")
@@ -981,7 +988,7 @@ class BeamModulePlugin implements Plugin<Project> {
         }
       }
 
-      project.jar {
+      project.jar.configure {
         setAutomaticModuleNameHeader(configuration, project)
 
         zip64 true
@@ -994,7 +1001,7 @@ class BeamModulePlugin implements Plugin<Project> {
       // Always configure the shadowJar classifier and merge service files.
       if (configuration.shadowClosure) {
         // Only set the classifer on the unshaded classes if we are shading.
-        project.jar { classifier = "unshaded" }
+        project.jar.configure { classifier = "unshaded" }
 
         project.shadowJar({
           classifier = null
@@ -1039,7 +1046,7 @@ class BeamModulePlugin implements Plugin<Project> {
         }
 
         if (configuration.validateShadowJar) {
-          project.task('validateShadedJarDoesntLeakNonProjectClasses', dependsOn: 'shadowJar') {
+          project.task('validateShadedJarDoesntLeakNonProjectClasses', dependsOn: 'shadowJar').configure {
             ext.outFile = project.file("${project.reportsDir}/${name}.out")
             inputs.files project.configurations.shadow.artifacts.files
             outputs.files outFile
@@ -1088,7 +1095,7 @@ class BeamModulePlugin implements Plugin<Project> {
         // Create a task which emulates the maven-archiver plugin in generating a
         // pom.properties file.
         def pomPropertiesFile = "${project.buildDir}/publications/mavenJava/pom.properties"
-        project.task('generatePomPropertiesFileForMavenJavaPublication') {
+        project.task('generatePomPropertiesFileForMavenJavaPublication').configure {
           outputs.file "${pomPropertiesFile}"
           doLast {
             new File("${pomPropertiesFile}").text =
@@ -1132,13 +1139,13 @@ class BeamModulePlugin implements Plugin<Project> {
           project.artifacts.archives project.testJar
         }
 
-        project.task('sourcesJar', type: Jar) {
+        project.task('sourcesJar', type: Jar).configure {
           from project.sourceSets.main.allSource
           classifier = 'sources'
         }
         project.artifacts.archives project.sourcesJar
 
-        project.task('testSourcesJar', type: Jar) {
+        project.task('testSourcesJar', type: Jar).configure {
           from project.sourceSets.test.allSource
           classifier = 'test-sources'
         }
@@ -1502,7 +1509,7 @@ class BeamModulePlugin implements Plugin<Project> {
     project.ext.applyGroovyNature = {
       project.apply plugin: "groovy"
 
-      project.apply plugin: "com.diffplug.gradle.spotless"
+      project.apply plugin: "com.diffplug.spotless"
       def disableSpotlessCheck = project.hasProperty('disableSpotlessCheck') &&
           project.disableSpotlessCheck == 'true'
       project.spotless {
@@ -1741,7 +1748,7 @@ class BeamModulePlugin implements Plugin<Project> {
         beamTestPipelineOptions.add("--jobServerConfig=${config.jobServerConfig}")
       }
       config.systemProperties.put("beamTestPipelineOptions", JsonOutput.toJson(beamTestPipelineOptions))
-      project.tasks.create(name: name, type: Test) {
+      project.tasks.create(name: name, type: Test).configure {
         group = "Verification"
         description = "Validates the PortableRunner with JobServer ${config.jobServerDriver}"
         systemProperties config.systemProperties
@@ -1926,7 +1933,7 @@ class BeamModulePlugin implements Plugin<Project> {
       project.ext.pythonVersion = project.hasProperty('pythonVersion') ?
           project.pythonVersion : '2.7'
 
-      project.task('setupVirtualenv')  {
+      project.task('setupVirtualenv').configure {
         doLast {
           def virtualenvCmd = [
             'virtualenv',
@@ -1958,6 +1965,7 @@ class BeamModulePlugin implements Plugin<Project> {
             '**/*.pyc',
             'sdks/python/*.egg*/**',
             'sdks/python/test-suites/**',
+            '**/reports/test/index.html',
           ])
           )
       def copiedSrcRoot = "${project.buildDir}/srcs"
@@ -2020,6 +2028,8 @@ class BeamModulePlugin implements Plugin<Project> {
           dependsOn 'setupVirtualenv'
           dependsOn ':sdks:python:sdist'
 
+          outputs.cacheIf { true }
+
           doLast {
             // Python source directory is also tox execution workspace, We want
             // to isolate them per tox suite to avoid conflict when running
@@ -2033,8 +2043,12 @@ class BeamModulePlugin implements Plugin<Project> {
               args '-c', ". ${project.ext.envdir}/bin/activate && cd ${copiedPyRoot} && scripts/run_tox.sh $tox_env $distTarBall"
             }
           }
-          inputs.files project.pythonSdkDeps
-          outputs.files project.fileTree(dir: "${pythonRootDir}/target/.tox/${tox_env}/log/")
+          inputs.files(project.pythonSdkDeps)
+              .withPropertyName('pythonSdkDeps')
+              .withPathSensitivity(PathSensitivity.RELATIVE)
+
+          outputs.dir("${pythonRootDir}/target/.tox/${tox_env}/log/")
+              .withPropertyName('log')
         }
       }
 

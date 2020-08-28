@@ -16,6 +16,20 @@
  * limitations under the License.
  */
 
+plugins {
+// Enable publishing build scans
+    id 'com.gradle.enterprise' version '3.4.1'
+}
+
+gradleEnterprise {
+    server = "https://e.grdev.net"
+    buildScan {
+        publishAlways()
+        captureTaskInputFiles = true
+        tag "beam"
+    }
+}
+
 rootProject.name = "beam"
 
 include ":release"

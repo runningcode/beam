@@ -18,47 +18,29 @@
 
 plugins {
   id 'base'
-  // Enable publishing build scans
-  id 'com.gradle.build-scan' version '3.4.1'
   // This plugin provides a task to determine which dependencies have updates.
   // Additionally, the plugin checks for updates to Gradle itself.
   //
   // See https://github.com/ben-manes/gradle-versions-plugin for further details.
   id 'com.github.ben-manes.versions' version '0.20.0'
   // Apply one top level rat plugin to perform any required license enforcement analysis
-  id 'org.nosphere.apache.rat' version '0.4.0'
+  id 'org.nosphere.apache.rat' version '0.7.0'
   // Enable gradle-based release management
   id 'net.researchgate.release' version '2.6.0'
   id 'org.apache.beam.module'
   id "org.sonarqube" version "2.7"
 }
 
-gradleEnterprise {
-  server = "https://e.grdev.net"
-  buildScan {
-    publishAlways()
-    captureTaskInputFiles = true
-    tag "beam"
-  }
-}
-
 /*************************************************************************************************/
 // Configure the root project
 
-// Plugins which require online access should not be enabled when running in offline mode.
-if (!gradle.startParameter.isOffline()) {
-  apply plugin: "com.gradle.build-scan"
-}
-
-// JENKINS_HOME and BUILD_ID set automatically during Jenkins execution
 def isCIBuild = ['JENKINS_HOME', 'BUILD_ID'].every System.&getenv
-if (isCIBuild) {
-  buildScan {
-    // Build Scan enabled and TOS accepted for Jenkins lab build. This does not apply to builds on
-    // non-Jenkins machines. Developers need to separately enable and accept TOS to use build scans.
-    termsOfServiceUrl = 'https://gradle.com/terms-of-service'
-    termsOfServiceAgree = 'yes'
-    publishAlways()
+
+allprojects {
+  normalization {
+    runtimeClasspath {
+      ignore 'sdk.properties'
+    }
   }
 }
 
@@ -66,11 +48,12 @@ rat {
   // Set input directory to that of the root project instead of the CWD. This
   // makes .gitignore rules (added below) work properly.
   inputDir = project.rootDir
+  failOnError = false
 
   def exclusions = [
     // Ignore files we track but do not distribute
     "**/.github/**/*",
-          ".java-version",
+    ".java-version",
 
     "**/package-list",
     "**/test.avsc",

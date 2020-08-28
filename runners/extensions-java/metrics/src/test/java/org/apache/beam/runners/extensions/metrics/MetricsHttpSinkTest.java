@@ -20,6 +20,7 @@ package org.apache.beam.runners.extensions.metrics;
 import static org.junit.Assert.assertEquals;
 
 import com.sun.net.httpserver.HttpServer;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -41,7 +42,7 @@ import org.junit.Test;
 /** Test class for MetricsHttpSink. */
 public class MetricsHttpSinkTest {
   private static int port;
-  private static List<String> messages = new ArrayList<>();
+  @SuppressFBWarnings private static List<String> messages = new ArrayList<>();
   private static HttpServer httpServer;
   private static CountDownLatch countDownLatch;
 

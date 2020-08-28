@@ -106,7 +106,8 @@ sourceSets {
  */
 spotless {
   java {
-    target target + project.fileTree(project.projectDir.parentFile) { include 'src/*/java/**/*.java' }
+    // TODO fix this. it isn't allowed in the new spotless version
+//    target target + project.fileTree(project.projectDir.parentFile) { include 'src/*/java/**/*.java' }
   }
 }
 
