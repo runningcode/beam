@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-       :sdks:java:core:test
+      # :sdks:java:core:test
       - name: Run :sdks:java:core:test
         uses: eskatos/gradle-command-action@v1
         with:
