@@ -111,11 +111,12 @@ jobs:
       - name: Run WordCount
         uses: eskatos/gradle-command-action@v1
         with:
-          arguments: -p examples/ \
-          integrationTest -DintegrationTestPipelineOptions='[
-          "--runner=DirectRunner", "--tempRoot=./tmp" ]' \
-          --tests org.apache.beam.examples.WordCountIT \
-          -DintegrationTestRunner=direct
+          arguments: |
+            -p examples/ \
+            integrationTest -DintegrationTestPipelineOptions='[
+            "--runner=DirectRunner", "--tempRoot=./tmp" ]' \
+            --tests org.apache.beam.examples.WordCountIT \
+            -DintegrationTestRunner=direct
       - name: Upload test logs
         uses: actions/upload-artifact@v2
         if: always()
