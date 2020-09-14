@@ -1384,7 +1384,7 @@ class BeamModulePlugin implements Plugin<Project> {
 
         include "**/*IT.class"
 
-        def pipelineOptionsString = configuration.integrationTestPipelineOptions
+        def pipelineOptionsString = configuration.integrationTestPipelineOptions.toString()
         def pipelineOptionsStringFormatted
         def allOptionsList
 
