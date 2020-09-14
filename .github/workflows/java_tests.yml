@@ -112,7 +112,7 @@ jobs:
       - uses: eskatos/gradle-command-action@v1
         with:
           arguments: -p examples/ \
-             integrationTest -DintegrationTestPipelineOptions='[
+             integrationTest -DintegrationTestPipelineOptions='[ \
           	 "--runner=DirectRunner", "--tempRoot=./tmp" ]' \
              --tests org.apache.beam.examples.WordCountIT \
              -DintegrationTestRunner=direct --stacktrace
