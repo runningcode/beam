@@ -113,10 +113,10 @@ jobs:
         with:
           arguments: |
             -p examples/ \
-            integrationTest -DintegrationTestPipelineOptions=[ \
-            "--runner=DirectRunner", "--tempRoot=./tmp" ] \
-            --tests org.apache.beam.examples.WordCountIT \
-            -DintegrationTestRunner=direct
+              integrationTest -DintegrationTestPipelineOptions=[
+                "--runner=DirectRunner", "--tempRoot=./tmp" ] \
+              --tests org.apache.beam.examples.WordCountIT \
+              -DintegrationTestRunner=direct
       - name: Upload test logs
         uses: actions/upload-artifact@v2
         if: always()
