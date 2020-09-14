@@ -1388,6 +1388,7 @@ class BeamModulePlugin implements Plugin<Project> {
         def pipelineOptionsStringFormatted
         def allOptionsList
 
+        println("pipelineOptionsString=$pipelineOptionsString")
         if(pipelineOptionsString) {
           allOptionsList = (new JsonSlurper()).parseText(pipelineOptionsString)
         }
