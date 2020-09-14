@@ -107,9 +107,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Run WordCount Unix
-#        shell: bash
-        run: ./gradlew -p examples/ \
+
+      - name: Run WordCount
+      - uses: eskatos/gradle-command-action@v1
+        with:
+          arguments: -p examples/ \
              integrationTest -DintegrationTestPipelineOptions='[
           	 "--runner=DirectRunner", "--tempRoot=./tmp" ]' \
              --tests org.apache.beam.examples.WordCountIT \
