@@ -111,7 +111,7 @@ jobs:
       - name: Run WordCount
         uses: eskatos/gradle-command-action@v1
         env:
-          integrationTestPipelineOptions: [ "--runner=DirectRunner", "--tempRoot=./tmp" ]
+          integrationTestPipelineOptions: ${{ '[ "--runner=DirectRunner", "--tempRoot=./tmp" ]' }}
           integrationTestRunner: direct
         with:
           arguments: -p examples/ --tests org.apache.beam.examples.WordCountIT
