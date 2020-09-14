@@ -113,7 +113,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
       - name: Run WordCount Unix
         uses: eskatos/gradle-command-action@v1
         with:
