@@ -113,7 +113,7 @@ jobs:
         with:
           arguments: |
             -p examples/ \
-            integrationTest -DintegrationTestPipelineOptions=[
+            integrationTest -DintegrationTestPipelineOptions=[ \
             "--runner=DirectRunner", "--tempRoot=./tmp" ] \
             --tests org.apache.beam.examples.WordCountIT \
             -DintegrationTestRunner=direct
