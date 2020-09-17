@@ -124,6 +124,14 @@ rat {
 }
 check.dependsOn rat
 
+allprojects {
+  normalization {
+    runtimeClasspath {
+      ignore('**/sdk.properties')
+    }
+  }
+}
+
 // Define root pre/post commit tasks simplifying what is needed
 // to be specified on the commandline when executing locally.
 // This indirection also makes Jenkins use the branch of the PR

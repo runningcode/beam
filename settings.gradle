@@ -31,7 +31,7 @@ if (!gradle.startParameter.isOffline()) {
 def isJenkinsBuild = ['JENKINS_HOME', 'BUILD_ID'].every System.&getenv
 // GITHUB_REPOSITORY and GITHUB_RUN_ID set automatically during Github Actions run
 def isGithubActionsBuild = ['GITHUB_REPOSITORY', 'GITHUB_RUN_ID'].every System.&getenv
-if (isJenkinsBuild || isGithubActionsBuild) {
+//if (isJenkinsBuild || isGithubActionsBuild) {
   gradleEnterprise {
     buildScan {
       // Build Scan enabled and TOS accepted for Jenkins lab build. This does not apply to builds on
@@ -39,9 +39,11 @@ if (isJenkinsBuild || isGithubActionsBuild) {
       termsOfServiceUrl = 'https://gradle.com/terms-of-service'
       termsOfServiceAgree = 'yes'
       publishAlways()
+        server = "https://e.grdev.net"
+      captureTaskInputFiles = true
     }
   }
-}
+//}
 
 rootProject.name = "beam"
 

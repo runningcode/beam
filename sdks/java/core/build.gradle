@@ -61,6 +61,10 @@ test {
   }
 }
 
+tasks.withType(Jar).configureEach {
+  preserveFileTimestamps(false)
+}
+
 dependencies {
   antlr library.java.antlr
   // Required to load constants from the model, e.g. max timestamp for global window
